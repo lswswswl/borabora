@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE sqlMap PUBLIC '-//ibatis.apache.org//DTD Sql Map 2.0//EN' 'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+<sqlMap>
+	<typeAlias alias="review" type="vo.ReviewVO" />
+	
+	<resultMap id="reviewRes" class="review">
+		<result property="no_p" column="no_p" />
+		<result property="no_r" column="no_r" />
+		<result property="reviewer" column="reviewer" />
+		<result property="reviewer_info" column="reviewer_info" />
+		<result property="title_r" column="title_r" />
+		<result property="content_r" column="content_r" />
+		<result property="image_r" column="image_r" />
+		<result property="reg_date_r" column="reg_date_r" />
+	</resultMap>		
+			
+	<sql id="select-all-review">
+		SELECT * FROM zzreview
+	</sql>		
+		
+	<!-- 공통으로 사용할 where-no 절 정의 -->
+	<sql id="where-review-no">
+		WHERE no_r = #no_r#
+	</sql>
+	
+	<!-- select 쿼리문 정의 -->		
+	<select id="reviewSelectOne" resultMap="reviewRes" parameterClass="int">
+		<include refid="select-all-review" />
+		WHERE no_p = #no_p#
+	</select>
+	
+	<!-- insert 쿼리문 정의 -->
+	<insert id="insertReview" parameterClass="review">
+		INSERT INTO zzreview(no_p, no_r, reviewer, reviewer_info, title_r, content_r, image_r, reg_date_r)
+		VALUES (#no_p#, COMMENT_NO_SEQ.NEXTVAL, #reviewer#, #reviewer_info#, #title_r#, #content_r#, #image_r#, #reg_date_r#)
+	</insert>
+	
+	
+</sqlMap>
+            

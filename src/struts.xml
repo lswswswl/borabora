@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+ "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.multipart.saveDir" value="/tmp" />
+
+	<package name="borabora" extends="struts-default">
+
+		<action name="loginJson" class="loginAction.Login">
+			<result>/ajax_login.jsp</result>
+		</action>
+
+		<action name="logout" class="loginAction.Logout">
+			<result>/index.jsp</result>
+		</action>
+
+		<action name="signupForm" class="memberAction.M_Create" method="form">
+			<result>/signup_form.jsp</result>
+		</action>
+
+		<action name="memberCreate" class="memberAction.M_Create">
+			<result>/index.jsp</result>
+		</action>
+
+		<action name="productForm" class="productAction.P_Create"
+			method="form">
+			<result>/upload_product.jsp</result>
+		</action>
+
+		<action name="productCreate" class="productAction.P_Create">
+			<result>/detail.jsp</result>
+		</action>
+
+		<action name="categoryList" class="listAction.CategoryList">
+			<result>/list.jsp</result>
+		</action>
+
+		<action name="productRead" class="productAction.P_Read">
+			<result>/detail.jsp</result>
+		</action>
+
+		<action name="updateProductForm" class="productAction.P_Update"
+			method="form">
+			<result>/update_product.jsp</result>
+		</action>
+
+		<action name="updateProduct" class="productAction.P_Update">
+			<result type="chain">productRead</result>
+		</action>
+
+		<action name="deleteProduct" class="productAction.P_Delete">
+			<result type="chain">myInfoRead</result>
+		</action>
+
+		<action name="productStatus" class="productAction.P_Status">
+			<result name="success" type="redirectAction">
+			<param name="actionName">productRead</param>
+			<param name="no_p">${no_p}</param>
+			<param name="currentPage">${currentPage}</param>
+			</result>
+		</action>
+
+		<action name="deleteLine" class="productAction.P_Status"
+			method="updateline">
+			<result name="success" type="redirectAction">
+			<param name="actionName">productRead</param>
+			<param name="no_p">${no_p}</param>
+			<param name="currentPage">${currentPage}</param>
+			</result>
+		</action>
+
+		<!-- mainList -->
+		<action name="main" class="listAction.CategoryList" method="mainList">
+			<result>/index_main.jsp</result>
+		</action>
+
+		<!-- mainList -->
+
+		<!-- 찜하기부분 -->
+		<action name="productFavorite" class="productAction.P_Read"
+			method="favorite">
+			<result name="success" type="redirectAction">
+			<param name="actionName">productRead</param>
+			<param name="no_p">${no_p}</param>
+			<param name="currentPage">${currentPage}</param>
+			</result>
+		</action>
+
+		<action name="productFavoriteDel" class="productAction.P_Read"
+			method="favoriteDel">
+			<result name="success" type="redirectAction">
+			<param name="actionName">productRead</param>
+			<param name="no_p">${no_p}</param>
+			<param name="currentPage">${currentPage}</param>
+			</result>
+		</action>
+
+		<action name="productFavoriteDel_list" class="productAction.P_Read"
+			method="favoriteDel">
+			<result type="chain">myInfoRead</result>
+		</action>
+		<!-- 찜하기부분 -->
+
+		<!-- 마이페이지 부분 -->
+		<action name="myInfoRead" class="memberAction.M_Read">
+			<result type="chain">nowSelling</result>
+		</action>
+
+		<action name="myInfoUpdateForm" class="memberAction.M_Update"
+			method="form">
+			<result>/update_info.jsp</result>
+		</action>
+
+		<action name="myInfoUpdate" class="memberAction.M_Update">
+			<result type="chain">myInfoRead</result>
+		</action>
+		
+		<action name="myInfoDelete" class="memberAction.M_Delete">
+			<result>/index.jsp</result>
+		</action>
+
+		<action name="nowSelling" class="mypageAction.NowSelling">
+			<result type="chain">nowBuying</result>
+		</action>
+
+		<action name="nowBuying" class="mypageAction.NowBuying">
+			<result>/my_page.jsp</result>
+		</action>
+
+		<!-- 댓글일때 -->
+		<action name="commentCreate" class="productAction.P_Create"
+			method="board">
+			<result name="success" type="redirectAction">
+			<param name="actionName">productRead</param>
+			<param name="no_p">${no_p}</param>
+			<param name="currentPage">${currentPage}</param>
+			</result>
+		</action>
+
+		<!-- 댓글의 댓글일때 -->
+		<action name="commentForm" class="productAction.P_Create"
+			method="form">
+			<result>/p_commentForm.jsp</result>
+		</action>
+
+		<action name="commentCreate2" class="productAction.P_Create"
+			method="comment">
+			<result name="success" type="redirectAction">
+			<param name="actionName">productRead</param>
+			<param name="no_p">${no_p}</param>
+			<param name="currentPage">${currentPage}</param>
+			</result>
+		</action>
+
+		<!-- 댓글 삭제 -->
+		<action name="cmtCheckPasswd" class="productAction.P_Read"
+			method="deleteForm">
+			<result>/cmtCheckPasswd.jsp</result>
+		</action>
+
+		<action name="commentDelete" class="productAction.P_Read"
+			method="cmtCheckPasswd">
+			<result type="chain">productRead</result>
+		</action>
+
+		<action name="reviewForm" class="productAction.P_Create"
+			method="form">
+			<result>/reviewForm.jsp</result>
+		</action>
+
+		<action name="reviewCreate" class="productAction.P_Create"
+			method="review">
+			<result type="chain">productRead</result>
+		</action>
+
+		<!-- <action name="fowardTest" class="productAction.P_Read"> <result>/forward_detail.jsp</result> 
+			</action> -->
+
+
+	</package>
+
+</struts>

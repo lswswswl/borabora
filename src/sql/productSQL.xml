@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC '-//ibatis.apache.org//DTD Sql Map 2.0//EN'
+	'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+<sqlMap>
+
+	<typeAlias alias="image" type="vo.P_ImageVO" />
+	<typeAlias alias="product" type="vo.ProductVO" />
+	<typeAlias alias="line" type="vo.LineVO" />
+	<typeAlias alias="map" type="java.util.Map" />
+
+	<resultMap id="imageRes" class="image">
+		<result property="no_p" column="no_p" />
+		<result property="main_image" column="main_image" />
+		<result property="image2" column="image2" />
+		<result property="image3" column="image3" />
+		<result property="image4" column="image4" />
+		<result property="image5" column="image5" />
+	</resultMap>
+
+	<resultMap id="productRes" class="product">
+		<result property="no_p" column="no_p" />
+		<result property="seller" column="seller" />
+		<result property="seller_info" column="seller_info" />
+		<result property="title_p" column="title_p" />
+		<result property="price" column="price" />
+		<result property="type_delivery" column="type_delivery" />
+		<result property="type_direct" column="type_direct" />
+		<result property="area" column="area" />
+		<result property="content_p" column="content_p" />
+		<result property="line_list" column="line_list" />
+		<result property="read_count" column="read_count" />
+		<result property="reg_date_p" column="reg_date_p" />
+		<result property="status_p" column="status_p" />
+	</resultMap>
+
+	<resultMap id="lineRes" class="line">
+		<result property="no_p" column="no_p" />
+		<result property="buyers" column="buyers" />
+		<result property="buyers_nickname" column="buyers_nickname" />
+		<result property="buyers_phone" column="buyers_phone" />
+		<result property="line_number" column="line_number" />
+	</resultMap>
+
+	<resultMap id="listRes" class="vo.P_ListVO">
+		<result property="main_image" column="main_image" />
+		<result property="no_p" column="no_p" />
+		<result property="seller" column="seller" />
+		<result property="seller_info" column="seller_info" />
+		<result property="title_p" column="title_p" />
+		<result property="price" column="price" />
+		<result property="type_delivery" column="type_delivery" />
+		<result property="type_direct" column="type_direct" />
+		<result property="area" column="area" />
+		<result property="content_p" column="content_p" />
+		<result property="line_list" column="line_list" />
+		<result property="read_count" column="read_count" />
+		<result property="reg_date_p" column="reg_date_p" />
+		<result property="status_p" column="status_p" />
+	</resultMap>
+
+
+	<!-- 공통으로 사용할 select 절 정의 -->
+
+	<sql id="select_img">
+		select * from zzimage
+	</sql>
+
+	<sql id="select_pro">
+		select * from zzproduct
+	</sql>
+
+	<!-- 공통으로 사용할 where-no 절 정의 -->
+	<sql id="where_no_p">
+		WHERE no_p = #no_p#
+	</sql>
+
+	<!-- select 쿼리문 정의 -->
+
+	<select id="select_all_img" resultMap="imageRes">
+		<include refid="select_img" />
+	</select>
+
+	<select id="select_all_pro" resultMap="productRes">
+		<include refid="select_pro" />
+	</select>
+
+	<select id="select_one_img" resultMap="imageRes" parameterClass="int">
+		select * from zzimage where no_p = #no_p#
+	</select>
+
+	<select id="select_created_img" resultMap="imageRes">
+		select * from zzimage
+		where no_p = (select max(no_p) from zzimage)
+	</select>
+
+	<select id="select_created_pro" resultMap="productRes">
+		select * from
+		zzproduct where no_p = (select max(no_p) from zzproduct)
+	</select>
+
+	<select id="select_one_pro" resultMap="productRes"
+		parameterClass="int">
+		select * from zzproduct where no_p = #no_p#
+	</select>
+
+	<select id="select_one_pro_list" resultMap="listRes"
+		parameterClass="int">
+		select i.main_image, p.no_p, p.seller, p.seller_info,
+		p.title_p, p.reg_date_p, p.price, p.type_delivery, p.type_direct,
+		p.area, p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage
+		i inner join zzproduct p on i.no_p = p.no_p
+		where p.no_p = #no_p#
+		order
+		by p.reg_date_p desc
+	</select>
+
+	<select id="select_for_list" resultMap="listRes">
+		select i.main_image,
+		p.no_p, p.seller, p.seller_info, p.title_p, p.reg_date_p, p.price,
+		p.type_delivery, p.type_direct, p.area, p.content_p, p.status_p,
+		p.line_list, p.read_count
+		from zzimage i inner join zzproduct p on
+		i.no_p = p.no_p
+		order by p.reg_date_p desc
+	</select>
+
+	<!-- 검색기능 -->
+	<select id="selectSearchS" resultMap="listRes" parameterClass="string">
+		select i.main_image, p.no_p, p.seller, p.seller_info, p.title_p,
+		p.reg_date_p, p.price, p.type_delivery, p.type_direct, p.area,
+		p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage i inner
+		join zzproduct p on i.no_p = p.no_p
+		<!-- <include refid="select_pro" /> -->
+		WHERE p.seller_info like #searchKeyword#
+		ORDER BY no_p DESC
+	</select>
+
+	<select id="selectSearchT" resultMap="listRes" parameterClass="string">
+		select i.main_image, p.no_p, p.seller, p.seller_info, p.title_p,
+		p.reg_date_p, p.price, p.type_delivery, p.type_direct, p.area,
+		p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage i inner
+		join zzproduct p on i.no_p = p.no_p
+		<!-- <include refid="select_pro" /> -->
+		WHERE p.title_p like #searchKeyword#
+		ORDER BY no_p DESC
+	</select>
+
+	<select id="selectSearchC" resultMap="listRes" parameterClass="string">
+		select i.main_image, p.no_p, p.seller, p.seller_info, p.title_p,
+		p.reg_date_p, p.price, p.type_delivery, p.type_direct, p.area,
+		p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage i inner
+		join zzproduct p on i.no_p = p.no_p
+		<!-- <include refid="select_pro" /> -->
+		WHERE p.content_p like #searchKeyword#
+		ORDER BY no_p DESC
+	</select>
+
+	<!-- insert 쿼리문 정의 -->
+
+	<insert id="insert_image" parameterClass="image">
+		insert into
+		zzimage(no_p, main_image, image2, image3, image4, image5)
+		values(no_p.currval, #main_image#, #image2#, #image3#, #image4#,
+		#image5#)
+	</insert>
+
+	<insert id="insert_product" parameterClass="product">
+		insert into
+		zzproduct(no_p, seller, seller_info, title_p, reg_date_p, price,
+		type_delivery, type_direct, area, content_p, status_p, line_list,
+		read_count)
+		values(no_p.nextval, #seller#, #seller_info#, #title_p#,
+		#reg_date_p#, #price#,
+		#type_delivery#, #type_direct#, #area#,
+		#content_p#, #status_p#,
+		#line_list#, #read_count#)
+	</insert>
+
+	<!-- update 쿼리문 정의 -->
+
+	<update id="update_product" parameterClass="product">
+		update zzproduct set
+		status_p=#status_p#, line_list=#line_list#
+		where no_p = #no_p#
+	</update>
+
+	<update id="updateReadCount" parameterClass="product">
+		update zzproduct set
+		read_count = read_count + 1
+		where no_p = #no_p#
+	</update>
+
+	<!-- 상품수정 -->
+
+	<update id="updateProduct" parameterClass="product">
+		update zzproduct set
+		title_p=#title_p#, price=#price#,
+		type_delivery=#type_delivery#,
+		type_direct=#type_direct#, area=#area#, content_p=#content_p#
+		where
+		no_p = #no_p#
+	</update>
+
+	<update id="update_image" parameterClass="image">
+		update zzimage set main_image=#main_image#, image2=#image2#,
+		image3=#image3#,
+		image4=#image4#, image5=#image5#
+		where no_p = #no_p#
+	</update>
+
+	<!-- 삭제 쿼리 구현 -->
+	<delete id="deleteProduct" parameterClass="product">
+		delete from zzproduct
+		where no_p = #no_p#
+	</delete>
+
+	<delete id="deleteImage" parameterClass="image">
+		delete from zzimage
+		where no_p = #no_p#
+	</delete>
+
+	<!-- 줄서기 구현 부분 -->
+
+	<insert id="insert_into_line" parameterClass="line">
+		insert into
+		for_line(no_p, buyers, buyers_nickname, buyers_phone,
+		line_number)
+		values(#no_p#, #buyers#, #buyers_nickname#, #buyers_phone#,
+		#line_number#)
+	</insert>
+
+	<update id="statusTo1" parameterClass="product">
+		update zzproduct set
+		status_p = #status_p#, line_list = #line_list#
+		where no_p = #no_p#
+	</update>
+
+	<select id="select_one_line" resultClass="line" parameterClass="map">
+		select * from (select * from for_line where no_p = #no_p#) where
+		buyers = #no_m#
+	</select>
+
+	<select id="line_in_order" resultMap="lineRes" parameterClass="int">
+		select no_p, buyers, buyers_nickname, buyers_phone, line_number
+		from
+		for_line
+		where no_p = #no_p#
+		order by line_number asc
+	</select>
+
+	<delete id="delete_line" parameterClass="int">
+		delete from for_line
+		where buyers = #no_m#
+	</delete>
+
+	<update id="update_line" parameterClass="int">
+		update for_line set
+		line_number = line_number-1 where line_number>#line_number#
+	</update>
+
+
+	<!-- mainList -->
+	<select id="select_best_product" resultMap="listRes">
+		select main_image,
+		no_p, seller, seller_info, title_p, reg_date_p, price, type_delivery,
+		type_direct, area, content_p, status_p, line_list, read_count
+		from
+		(select i.main_image, p.no_p, p.seller, p.seller_info, p.title_p,
+		p.reg_date_p, p.price, p.type_delivery, p.type_direct, p.area,
+		p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage i,
+		zzproduct p where i.no_p = p.no_p order by p.read_count desc) where
+		rownum &lt; 4
+	</select>
+
+	<select id="select_new_product" resultMap="listRes">
+		select main_image,
+		no_p, seller, seller_info, title_p, reg_date_p, price, type_delivery,
+		type_direct, area, content_p, status_p, line_list, read_count
+		from
+		(select i.main_image, p.no_p, p.seller, p.seller_info, p.title_p,
+		p.reg_date_p, p.price, p.type_delivery, p.type_direct, p.area,
+		p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage i,
+		zzproduct p where i.no_p = p.no_p order by p.reg_date_p desc) where
+		rownum &lt; 4
+	</select>
+	<!-- mainList -->
+	
+		<!-- mainList2 -->
+	<select id="select_best_product2" resultMap="listRes">
+		select main_image,
+		no_p, seller, seller_info, title_p, reg_date_p, price, type_delivery,
+		type_direct, area, content_p, status_p, line_list, read_count
+		from
+		(select i.main_image, p.no_p, p.seller, p.seller_info, p.title_p,
+		p.reg_date_p, p.price, p.type_delivery, p.type_direct, p.area,
+		p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage i,
+		zzproduct p where i.no_p = p.no_p order by p.read_count desc) where
+		rownum &lt; 5
+	</select>
+
+	<select id="select_new_product2" resultMap="listRes">
+		select main_image,
+		no_p, seller, seller_info, title_p, reg_date_p, price, type_delivery,
+		type_direct, area, content_p, status_p, line_list, read_count
+		from
+		(select i.main_image, p.no_p, p.seller, p.seller_info, p.title_p,
+		p.reg_date_p, p.price, p.type_delivery, p.type_direct, p.area,
+		p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage i,
+		zzproduct p where i.no_p = p.no_p order by p.reg_date_p desc) where
+		rownum &lt; 5
+	</select>
+	<!-- mainList -->
+	
+
+
+
+	<!-- 마이페이지 구현 부분 -->
+
+	<select id="select_my_products" resultMap="listRes"
+		parameterClass="int">
+		select i.main_image, p.no_p, p.seller, p.seller_info,
+		p.title_p, p.reg_date_p, p.price, p.type_delivery, p.type_direct,
+		p.area, p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage
+		i inner join zzproduct p on i.no_p = p.no_p
+		where seller = #no_m#
+		order
+		by p.reg_date_p desc
+	</select>
+
+	<select id="select_line_count" resultMap="lineRes"
+		parameterClass="int">
+		select * from (select * from for_line where no_p =
+		#no_p#) where line_number = (select max(line_number) from for_line)
+	</select>
+
+	<select id="select_now_buying" resultMap="listRes"
+		parameterClass="String">
+		select i.main_image, p.no_p, p.seller, p.seller_info,
+		p.title_p, p.reg_date_p, p.price, p.type_delivery, p.type_direct,
+		p.area, p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage
+		i inner join zzproduct p on i.no_p = p.no_p
+		where p.line_list like
+		#no_m#
+		order by p.reg_date_p desc
+	</select>
+
+	<select id="select_now_selling" resultMap="listRes"
+		parameterClass="int">
+		select i.main_image, p.no_p, p.seller, p.seller_info,
+		p.title_p, p.reg_date_p, p.price, p.type_delivery, p.type_direct,
+		p.area, p.content_p, p.status_p, p.line_list, p.read_count
+		from zzimage
+		i inner join zzproduct p on i.no_p = p.no_p
+		where seller = #no_m#
+		order
+		by p.reg_date_p desc
+	</select>
+</sqlMap>

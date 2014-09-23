@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC '-//ibatis.apache.org//DTD Sql Map 2.0//EN'
+	'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+
+<sqlMap>
+	
+	<typeAlias alias="member" type="vo.MemberVO"/>
+	<typeAlias alias="favorite" type="vo.FavoriteVO"/>
+	
+	<resultMap id="memberRes" class="member">
+		<result property="no_m" column="no_m"/>
+		<result property="name" column="name"/>
+		<result property="email" column="email"/>
+		<result property="phone" column="phone"/>
+		<result property="password" column="password"/>
+		<result property="nickname" column="nickname"/>
+		<result property="profile_image" column="profile_image"/>
+		<result property="address1" column="address1"/>
+		<result property="address2" column="address2"/>
+		<result property="zipcode" column="zipcode"/>
+		<result property="bank_name" column="bank_name"/>
+		<result property="bank_account" column="bank_account"/>
+		<result property="balance" column="balance"/>
+		<result property="registered_product" column="registered_product"/>
+		<result property="sold" column="sold"/>
+		<result property="bought" column="bought"/>
+		<result property="signup_date" column="signup_date"/>
+	</resultMap>
+	
+	<resultMap id="favoriteRes" class="favorite">
+		<result property="favorite_no" column="favorite_no"/>
+		<result property="no_m" column="no_m"/>
+		<result property="favorite_list" column="favorite_list"/>
+	</resultMap>
+	
+	<!-- 공통으로 사용할 select 절 정의 -->
+
+	<sql id="select_mem">
+		select * from zzmember
+	</sql>
+	
+	<!-- 공통으로 사용할 where-no 절 정의 -->
+	<sql id="where_no_m">
+		WHERE no_m = #no_m#
+	</sql>
+	
+	<!-- select 쿼리문 정의 -->
+
+	<select id="select_all_mem" resultMap="memberRes" >
+		<include refid="select_mem"/>
+	</select>
+
+	<select id="select_one_mem" resultMap="memberRes" parameterClass="member">
+		select * from zzmember where no_m = #no_m#
+	</select>
+	
+	<select id="select_mem_by_email" resultMap="memberRes" parameterClass="String">
+		select * from zzmember where email = #email#
+	</select>
+	
+	<select id="select_mem_by_no_m" resultMap="memberRes" parameterClass="int">
+		select * from zzmember where no_m = #no_m#
+	</select>
+
+	<!-- insert 쿼리문 정의 -->
+	
+	<insert id="insert_member" parameterClass="member">
+		insert into zzmember(no_m, name, email, phone, password, nickname, profile_image, address1, address2, zipcode, bank_name, bank_account, balance, registered_product, sold, bought, signup_date) 
+		values(no_m.nextval, #name#, #email#, #phone#, #password#, #nickname#, #profile_image#, #address1#, #address2#, #zipcode#, #bank_name#, #bank_account#, #balance#, #registered_product#, #sold#, #bought#, #signup_date#)
+	</insert>
+	
+	<!-- update 쿼리문 정의 -->
+	
+	<update id="update_member" parameterClass="member">
+		update zzmember set phone=#phone#, nickname=#nickname#, profile_image=#profile_image#, address1=#address1#, 
+		address2=#address2#, zipcode=#zipcode#, bank_name=#bank_name#, bank_account=#bank_account#
+		where no_m = #no_m#
+	</update>
+	
+	<update id="update_profile_image" parameterClass="member">
+		update zzmember set profile_image=#profile_image#
+		where no_m = #no_m#
+	</update>
+	
+	<!-- delete 쿼리문 정의 -->
+	<delete id="delete_member" parameterClass="member">
+		delete from zzmember where no_m = #no_m#
+	</delete>
+	
+	
+	<!-- 찜구현 -->
+	<select id="select_favorite" resultMap="favoriteRes" parameterClass="int">
+		select * from zzfavorite where no_m = #no_m#
+		order by favorite_no asc
+	</select>
+	
+	<select id="select_favorite_check" resultMap="favoriteRes" parameterClass="favorite">
+		select * from zzfavorite
+		where no_m = #no_m# and favorite_list = #favorite_list#
+	</select>
+	
+	<insert id="insert_product_favorite" parameterClass="favorite">
+		insert into zzfavorite(favorite_no, no_m, favorite_list)
+		values(favorite_no_seq.nextval, #no_m#, #favorite_list#)
+	</insert>
+	
+	<delete id="delete_product_favorite" parameterClass="favorite">
+		delete from zzfavorite
+		where no_m = #no_m# and favorite_list = #favorite_list#
+	</delete>
+</sqlMap>	

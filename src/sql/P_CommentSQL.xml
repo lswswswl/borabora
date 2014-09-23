@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE sqlMap PUBLIC '-//ibatis.apache.org//DTD Sql Map 2.0//EN' 'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+<sqlMap>
+	<typeAlias alias="comment" type="vo.P_CommentVO"/>
+	<typeAlias alias="comment_image" type="vo.P_CommentImageVO"/>	
+	
+	<resultMap id="commentRes" class="comment">
+		<result property="no_p" column="no_p"/>
+		<result property="no_c" column="no_c" />
+		<result property="commentor" column="commentor"/>
+		<result property="commentor_info" column="commentor_info"/>
+		<result property="content_c" column="content_c" />
+		<result property="ref" column="ref" />
+		<result property="re_step" column="re_step" />
+		<result property="re_level" column="re_level" />
+		<result property="reg_date_c" column="reg_date_c" />
+		<result property="replyto" column="replyto"/>
+	</resultMap>
+	
+		<resultMap id="comment_imageRes" class="comment_image">
+		<result property="no_p" column="no_p"/>
+		<result property="no_c" column="no_c" />
+		<result property="commentor" column="commentor"/>
+		<result property="commentor_info" column="commentor_info"/>
+		<result property="content_c" column="content_c" />
+		<result property="ref" column="ref" />
+		<result property="re_step" column="re_step" />
+		<result property="re_level" column="re_level" />
+		<result property="reg_date_c" column="reg_date_c" />
+		<result property="replyto" column="replyto"/>
+		<result property="profile_image" column="profile_image"/>
+		
+	</resultMap>
+
+	<!-- 공통으로 사용할 select 절 정의 -->
+	
+	<sql id="select-all-comment">
+		SELECT * FROM zzp_comment
+	</sql>		
+		
+	<!-- 공통으로 사용할 where-no 절 정의 -->
+	<sql id="where-comment-no">
+		WHERE no_c = #no_c#
+	</sql>
+	
+	
+	<!-- select 쿼리문 정의 -->	
+	<select id="commentSelectAll_image" resultMap="comment_imageRes" parameterClass="int">
+  		SELECT a.no_p, a.commentor, a.commentor_info, a.no_c, a.content_c, a.reg_date_c, a.ref, a.re_step, a.re_level, a.replyto, b.profile_image 
+  		FROM zzp_comment a, zzmember b
+  		WHERE no_p = #no_p# and a.commentor = b.no_m
+  		ORDER BY a.ref DESC, a.re_step ASC
+ 	</select>
+		
+	<select id="commentSelectAll" resultMap="commentRes" parameterClass="int">
+		<include refid="select-all-comment" />
+		WHERE no_p = #no_p#
+		ORDER BY ref DESC, re_step ASC
+	</select>
+	
+	<select id="commentSelectOne" resultMap="commentRes" parameterClass="int">
+		<include refid="select-all-comment" />
+		ORDER BY re_step ASC
+	</select>
+	
+	<select id="commentOne" resultMap="commentRes" parameterClass="int">
+		<include refid="select-all-comment"/>
+		<include refid="where-comment-no"/>
+	</select>
+	
+	<!-- insert 쿼리문 정의 -->
+	<insert id="insertComment" parameterClass="comment">
+		INSERT INTO zzp_comment(no_p, no_c, commentor, commentor_info, content_c, reg_date_c, ref, re_step, re_level, replyto)
+		VALUES (#no_p#, COMMENT_NO_SEQ.NEXTVAL, #commentor#, #commentor_info#, #content_c#, #reg_date_c#, COMMENT_NO_SEQ.CURRVAL, #re_step#, #re_level#, #replyto#)
+	</insert>
+	
+	<insert id="insertComment2" parameterClass="comment">
+		INSERT INTO zzp_comment(no_p, no_c, commentor, commentor_info, content_c, reg_date_c, ref, re_step, re_level, replyto)
+		VALUES (#no_p#, COMMENT_NO_SEQ.NEXTVAL, #commentor#, #commentor_info#, #content_c#, #reg_date_c#, #ref#, #re_step#, #re_level#, #replyto#)
+	</insert>
+	
+	<!-- update 쿼리문 정의 -->
+	<update id="updateCommentStep" parameterClass="comment">
+		UPDATE zzp_comment SET re_step=re_step+1 WHERE ref=#ref# AND re_step>#re_step#
+	</update>
+	
+	<!-- 코멘트 삭제할때 필요한 SQL -->	
+	<delete id="deleteComment" parameterClass="comment">
+		DELETE FROM zzp_comment
+		<include refid="where-comment-no"/>
+	</delete>
+	
+	<select id="commentSelectList" resultMap="commentRes" parameterClass="int">
+		<include refid="select-all-comment" />
+		WHERE ref = #ref#
+	</select>
+	
+	<update id="updateCommentContent" parameterClass="comment">
+		UPDATE zzp_comment SET content_c=#content_c# WHERE no_c=#no_c#
+	</update>
+</sqlMap>
+            
